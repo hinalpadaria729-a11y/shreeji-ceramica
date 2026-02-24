@@ -63,12 +63,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                         placeholder="Search/Enter name"
                     />
                     {showSuggestions && history.length > 0 && (
-                        <div className="suggestions-dropdown" style={{
-                            position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 30,
-                            background: 'white', border: '1px solid var(--color-border)',
-                            borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)',
-                            maxHeight: '150px', overflowY: 'auto', marginTop: '4px'
-                        }}>
+                        <div className="suggestions-dropdown" style={{ maxHeight: '150px' }}>
                             {history.filter(h => h.customerName.toLowerCase().includes(customer.customerName.toLowerCase())).map((h, i) => (
                                 <div
                                     key={i}

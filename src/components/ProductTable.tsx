@@ -128,7 +128,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
     };
 
     return (
-        <div className="panel glass-panel mt-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="panel glass-panel mt-6 animate-fade-in" style={{ animationDelay: '0.1s', position: 'relative' }}>
             <div className="flex justify-between items-center mb-4 gap-4">
                 <h2 className="panel-title mb-0 flex-shrink-0"><Box size={20} /> Products / Bill of Materials</h2>
 
@@ -151,12 +151,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                         />
                     </div>
                     {showGlobalSuggestions && (globalSearch.length > 1) && (
-                        <div className="suggestions-dropdown" style={{
-                            position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20,
-                            background: 'white', border: '1px solid var(--color-border)',
-                            borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
-                            maxHeight: '400px', overflowY: 'auto', marginTop: '4px'
-                        }}>
+                        <div className="suggestions-dropdown" style={{ maxHeight: '400px' }}>
                             {activeBrand === 'KOHLER' ? (
                                 <>
                                     {[
@@ -409,12 +404,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                                     </div>
 
                                     {activeRowId === product.id && (
-                                        <div className="suggestions-dropdown" style={{
-                                            position: 'absolute', top: '100%', left: '0', right: '-150px', zIndex: 10,
-                                            background: 'white', border: '1px solid var(--color-border)',
-                                            borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)',
-                                            maxHeight: '280px', overflowY: 'auto', minWidth: '380px'
-                                        }}>
+                                        <div className="suggestions-dropdown" style={{ right: '-150px', minWidth: '380px' }}>
                                             {history.filter(h =>
                                                 h.productCode?.toLowerCase().includes(product.productCode.toLowerCase()) ||
                                                 h.productName?.toLowerCase().includes(product.productName.toLowerCase())

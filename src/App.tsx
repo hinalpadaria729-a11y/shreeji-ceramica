@@ -169,37 +169,43 @@ function App() {
         ) : (
           <>
             <div className="main-content">
-              <CustomerForm
-                customer={customer}
-                onChange={handleCustomerChange}
-                includeGST={includeGST}
-                onIncludeGSTChange={setIncludeGST}
-                gstPercentage={gstPercentage}
-                onGstPercentageChange={setGstPercentage}
-              />
+              <div className="relative z-30">
+                <CustomerForm
+                  customer={customer}
+                  onChange={handleCustomerChange}
+                  includeGST={includeGST}
+                  onIncludeGSTChange={setIncludeGST}
+                  gstPercentage={gstPercentage}
+                  onGstPercentageChange={setGstPercentage}
+                />
+              </div>
 
-              <ProductTable
-                products={products}
-                setProducts={setProducts}
-                activeBrand={activeBrand}
-                discountMode={discountMode}
-                commonDiscountPercentage={commonDiscountPercentage}
-              />
+              <div className="relative z-20">
+                <ProductTable
+                  products={products}
+                  setProducts={setProducts}
+                  activeBrand={activeBrand}
+                  discountMode={discountMode}
+                  commonDiscountPercentage={commonDiscountPercentage}
+                />
+              </div>
 
-              <ActionPanel
-                customer={customer}
-                products={products}
-                includeGST={includeGST}
-                gstPercentage={gstPercentage}
-                discountMode={discountMode}
-                onDiscountModeChange={setDiscountMode}
-                commonDiscountPercentage={commonDiscountPercentage}
-                onCommonDiscountChange={setCommonDiscountPercentage}
-                globalDiscountAmount={globalDiscountAmount}
-                onGlobalDiscountChange={setGlobalDiscountAmount}
-                onViewPDF={handleViewPDF}
-                onSaveQuote={handleSaveQuote}
-              />
+              <div className="relative z-10">
+                <ActionPanel
+                  customer={customer}
+                  products={products}
+                  includeGST={includeGST}
+                  gstPercentage={gstPercentage}
+                  discountMode={discountMode}
+                  onDiscountModeChange={setDiscountMode}
+                  commonDiscountPercentage={commonDiscountPercentage}
+                  onCommonDiscountChange={setCommonDiscountPercentage}
+                  globalDiscountAmount={globalDiscountAmount}
+                  onGlobalDiscountChange={setGlobalDiscountAmount}
+                  onViewPDF={handleViewPDF}
+                  onSaveQuote={handleSaveQuote}
+                />
+              </div>
             </div>
 
             <aside className="sidebar flex flex-col gap-4">
