@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Box, FileText, PlusCircle } from 'lucide-react';
+import { Layers, Box, FileText, PlusCircle, X } from 'lucide-react';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -21,11 +21,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             />
 
             <aside className={`sidebar-secondary ${isOpen ? 'open' : ''}`}>
-                <div className="sidebar-header">
+                <div className="sidebar-header flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <Layers size={20} className="text-primary" />
                         <span className="font-bold text-lg">Menu</span>
                     </div>
+                    <button
+                        onClick={() => onBrandSelect(activeBrand)}
+                        className="mobile-only p-2 hover:bg-gray-100 rounded-full"
+                    >
+                        <X size={20} className="text-muted" />
+                    </button>
                 </div>
 
                 <div className="sidebar-content flex-grow overflow-y-auto">

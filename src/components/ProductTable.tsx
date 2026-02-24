@@ -566,6 +566,113 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                     </tbody>
                 </table>
             </div>
+
+            {/* Mobile Card View */}
+            <div className="product-mobile-grid">
+                {products.length === 0 ? (
+                    <div className="p-8 text-center text-muted glass-panel">
+                        <Info size={32} className="mx-auto mb-2 opacity-20" />
+                        <p>No products added yet.</p>
+                        <button className="btn btn-primary btn-sm mt-4 w-full" onClick={addProduct}>
+                            <Plus size={16} /> Add Product
+                        </button>
+                    </div>
+                ) : (
+                    products.map((product) => (
+                        <div key={product.id} className="product-card">
+                            <div className="product-card-header">
+                                <div className="product-card-img">
+                                    {(product.image || product.productImage) ? (
+                                        <img src={product.image || product.productImage} alt="" className="max-w-full max-h-full object-contain" />
+                                    ) : (
+                                        <Box size={24} className="text-muted opacity-30" />
+                                    )}
+                                </div>
+                                <div className="flex-grow min-w-0">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <input
+                                            type="text"
+                                            className="input-field w-full font-bold text-sm"
+                                            placeholder="Code"
+                                            value={product.productCode}
+                                            onChange={(e) => updateProduct(product.id, 'productCode', e.target.value)}
+                                        />
+                                        <button
+                                            className="p-2 text-danger hover:bg-red-50 rounded-full"
+                                            onClick={() => removeProduct(product.id)}
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="input-field w-full mt-2 text-xs"
+                                        placeholder="Product Name"
+                                        value={product.productName}
+                                        onChange={(e) => updateProduct(product.id, 'productName', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="product-card-body">
+                                <div className="input-group mb-0">
+                                    <label className="input-label text-[10px]">Size</label>
+                                    <input
+                                        type="text"
+                                        className="input-field w-full"
+                                        value={product.size}
+                                        onChange={(e) => updateProduct(product.id, 'size', e.target.value)}
+                                    />
+                                </div>
+                                <div className="input-group mb-0">
+                                    <label className="input-label text-[10px]">Color</label>
+                                    <input
+                                        type="text"
+                                        className="input-field w-full"
+                                        value={product.color}
+                                        onChange={(e) => updateProduct(product.id, 'color', e.target.value)}
+                                    />
+                                </div>
+                                <div className="input-group mb-0">
+                                    <label className="input-label text-[10px]">Quantity</label>
+                                    <input
+                                        type="number"
+                                        className="input-field w-full"
+                                        value={product.quantity}
+                                        onChange={(e) => updateProduct(product.id, 'quantity', Number(e.target.value))}
+                                    />
+                                </div>
+                                <div className="input-group mb-0">
+                                    <label className="input-label text-[10px]">Rate</label>
+                                    <input
+                                        type="number"
+                                        className="input-field w-full font-bold"
+                                        value={product.rate}
+                                        onChange={(e) => updateProduct(product.id, 'rate', Number(e.target.value))}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="product-card-footer">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold text-muted uppercase">Disc:</span>
+                                    <input
+                                        className={`input-field text-center w-12 ${discountMode !== 'INDIVIDUAL' ? 'bg-gray-100' : ''}`}
+                                        value={product.discountPercentage}
+                                        onChange={(e) => updateProduct(product.id, 'discountPercentage', Number(e.target.value))}
+                                        disabled={discountMode !== 'INDIVIDUAL'}
+                                    />
+                                    <span className="text-xs text-muted">%</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-[10px] text-muted uppercase font-bold">Total</div>
+                                    <div className="text-lg font-bold text-primary">{formatCurrency(product.finalAmount)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 };

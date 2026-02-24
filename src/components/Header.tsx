@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick, activeBrand }) => {
                         )}
                     </h1>
                 </div>
-                <div className="header-meta text-muted text-sm text-right">
+                <div className="header-meta text-muted text-sm text-right mobile-hide">
                     <div>Quotation Portal</div>
                     <div>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                 </div>

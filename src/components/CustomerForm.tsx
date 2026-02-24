@@ -120,7 +120,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     />
                 </div>
 
-                <div className="input-group relative z-10" style={{ gridColumn: 'span 2' }}>
+                <div className="input-group relative z-10 md:col-span-2">
                     <label className="input-label flex items-center gap-2"><MapPin size={12} /> Billing Address</label>
                     <input
                         type="text"

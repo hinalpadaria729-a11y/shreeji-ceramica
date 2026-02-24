@@ -129,7 +129,8 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
                 </p>
             </div>
 
-            <div className="action-panel flex gap-2 items-center flex-wrap">
+            {/* Desktop View */}
+            <div className="action-panel desktop-action-panel flex gap-2 items-center flex-wrap">
                 <button className="btn btn-secondary" style={{ padding: '0.6rem 1.2rem', backgroundColor: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0' }} onClick={onSaveQuote}>
                     <Save size={16} /> Save Quote
                 </button>
@@ -144,6 +145,22 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
                 </button>
                 <button className="btn btn-accent" style={{ padding: '0.6rem 1.2rem' }} onClick={handleWhatsApp}>
                     <MessageCircle size={16} /> WhatsApp
+                </button>
+            </div>
+
+            {/* Mobile Sticky Bar */}
+            <div className="mobile-action-bar">
+                <button className="btn btn-secondary flex-grow" onClick={onSaveQuote}>
+                    <Save size={18} /> <span className="text-xs">Save</span>
+                </button>
+                <button className="btn btn-secondary flex-grow" onClick={onViewPDF}>
+                    <Eye size={18} /> <span className="text-xs">Preview</span>
+                </button>
+                <button className="btn btn-primary flex-grow" onClick={handleGeneratePDF}>
+                    <Download size={18} /> <span className="text-xs">PDF</span>
+                </button>
+                <button className="btn btn-accent p-3" onClick={handleWhatsApp}>
+                    <MessageCircle size={20} />
                 </button>
             </div>
         </div>
