@@ -1,3 +1,4 @@
+// Deployment Trigger: 2026-02-26 16:10
 import { useState } from 'react';
 import type { CustomerDetails, ProductDetails } from './types';
 import { Header } from './components/Header';
