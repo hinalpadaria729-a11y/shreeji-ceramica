@@ -32,9 +32,12 @@ function App() {
   const [previewUrl, setPreviewUrl] = useState('');
   const [currentRoute, setCurrentRoute] = useState<'DASHBOARD' | 'BRAND_SELECTION' | 'APP'>(() => {
     const path = window.location.pathname;
-    if (path === '/dashboard') return 'DASHBOARD';
     if (path === '/app') return 'APP';
-    return 'BRAND_SELECTION';
+    // Always default to Dashboard (on '/', '/dashboard', or any unrecognised path)
+    if (path !== '/dashboard') {
+      window.history.replaceState(null, '', '/dashboard');
+    }
+    return 'DASHBOARD';
   });
   const [activeBrand, setActiveBrand] = useState<'KOHLER' | 'AQUANT' | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
