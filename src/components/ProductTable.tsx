@@ -6,6 +6,19 @@ import { Plus, Trash2, Box, Info, Search, Database } from 'lucide-react';
 import kohlerCatalog from '../data/products.json';
 import aquantCatalog from '../data/aquant_products.json';
 
+const ROOM_OPTIONS = [
+    { value: '', label: '— Room —' },
+    { value: "Kid's Bathroom", label: "Kid's Bathroom" },
+    { value: 'Guest Bathroom', label: 'Guest Bathroom' },
+    { value: "Parent's Bathroom", label: "Parent's Bathroom" },
+    { value: 'Master Bathroom', label: 'Master Bathroom' },
+    { value: 'Common / Powder Room', label: 'Common / Powder Room' },
+    { value: 'Living Room', label: 'Living Room' },
+    { value: 'Kitchen', label: 'Kitchen' },
+    { value: 'Balcony', label: 'Balcony' },
+    { value: 'Utility Room', label: 'Utility Room' },
+];
+
 interface ProductTableProps {
     products: ProductDetails[];
     setProducts: React.Dispatch<React.SetStateAction<ProductDetails[]>>;
@@ -340,6 +353,81 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                                     </div>
                                 )
                             )}
+
+                            {(() => {
+                                const isKohler = activeBrand === 'KOHLER';
+                                const inactiveBrand = isKohler ? 'AQUANT' : 'KOHLER';
+                                const inactiveCatalog = isKohler ? aquantCatalog : kohlerCatalog;
+
+                                const searchLower = globalSearch.toLowerCase();
+                                const inactiveMatches = inactiveCatalog.filter(c => {
+                                    const matchCode = c.productCode?.toLowerCase() || '';
+                                    const matchName = c.productName?.toLowerCase() || '';
+                                    return matchCode.includes(searchLower) || matchName.includes(searchLower);
+                                }).slice(0, 10);
+
+                                if (inactiveMatches.length === 0) return null;
+
+                                return (
+                                    <div key="cross-brand-matches" className="mt-2 border-t border-gray-100">
+                                        <div className="p-2 bg-blue-50 text-[10px] font-bold text-blue-700 uppercase flex items-center gap-1 border-b border-blue-100">
+                                            <Search size={10} /> {inactiveBrand} Matches
+                                        </div>
+                                        {inactiveMatches.map((c: any, i) => (
+                                            <div
+                                                key={`cross-glob-${i}`}
+                                                className="suggestion-item p-2 hover:bg-blue-50 cursor-pointer text-sm flex gap-3 items-center border-b border-gray-50"
+                                                onClick={() => {
+                                                    const newPrd: ProductDetails = {
+                                                        id: crypto.randomUUID(),
+                                                        productCode: c.productCode,
+                                                        productName: c.productName,
+                                                        image: c.image || '',
+                                                        rate: c.rate,
+                                                        quantity: 1,
+                                                        size: c.size || '',
+                                                        color: c.color || '',
+                                                        discountPercentage: discountMode === 'COMMON' ? commonDiscountPercentage : 0,
+                                                        discountAmount: 0,
+                                                        amountBeforeDiscount: 0,
+                                                        finalAmount: 0
+                                                    };
+                                                    if (discountMode === 'COMMON') {
+                                                        const { amountBeforeDiscount, discountAmount, finalAmount } = calculateProductTotals(
+                                                            newPrd.quantity,
+                                                            newPrd.rate,
+                                                            commonDiscountPercentage
+                                                        );
+                                                        newPrd.amountBeforeDiscount = amountBeforeDiscount;
+                                                        newPrd.discountAmount = discountAmount;
+                                                        newPrd.finalAmount = finalAmount;
+                                                    }
+                                                    setProducts([...products, newPrd]);
+                                                    setGlobalSearch('');
+                                                    setShowGlobalSuggestions(false);
+                                                }}
+                                            >
+                                                {c.image ? (
+                                                    <div className="w-10 h-10 min-w-[2.5rem] bg-white rounded border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                                        <img src={c.image} alt={c.productCode} className="w-full h-full object-contain" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-10 h-10 min-w-[2.5rem] bg-gray-50 rounded border border-gray-100 flex items-center justify-center text-muted flex-shrink-0">
+                                                        <Database size={14} />
+                                                    </div>
+                                                )}
+                                                <div className="flex-grow min-w-0">
+                                                    <div className="font-bold text-primary flex justify-between items-center text-xs">
+                                                        <span className="truncate mr-2">{c.productCode}</span>
+                                                        <span className="text-secondary flex-shrink-0">{formatCurrency(c.rate)}</span>
+                                                    </div>
+                                                    <div className="text-muted text-[10px] truncate">{c.productName}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            })()}
                         </div>
                     )}
                 </div>
@@ -353,21 +441,22 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                 <table className="premium-table w-full">
                     <thead>
                         <tr>
-                            <th style={{ width: '13%', padding: '0.4rem 0.3rem' }}>CODE</th>
-                            <th style={{ width: '25%', padding: '0.4rem 0.3rem' }}>PRODUCT NAME</th>
-                            <th style={{ width: '9%', padding: '0.4rem 0.3rem' }}>SIZE</th>
-                            <th style={{ width: '9%', padding: '0.4rem 0.3rem' }}>COLOR</th>
-                            <th className="text-center" style={{ width: '6%', padding: '0.4rem 0.3rem' }}>QTY</th>
-                            <th className="text-center" style={{ width: '9%', padding: '0.4rem 0.3rem' }}>RATE</th>
-                            <th className="text-center" style={{ width: '6%', padding: '0.4rem 0.3rem' }}>DISC</th>
-                            <th className="text-right" style={{ width: '11%', padding: '0.4rem 0.3rem' }}>AMOUNT</th>
-                            <th className="text-center" style={{ width: '3%', padding: '0.4rem 0.3rem' }}></th>
+                            <th style={{ width: '12%', minWidth: '80px', padding: '0.4rem 0.3rem' }}>CODE</th>
+                            <th style={{ width: '22%', minWidth: '150px', padding: '0.4rem 0.3rem' }}>PRODUCT NAME</th>
+                            <th style={{ width: '8%', minWidth: '60px', padding: '0.4rem 0.3rem' }}>SIZE</th>
+                            <th style={{ width: '8%', minWidth: '80px', padding: '0.4rem 0.3rem' }}>COLOR</th>
+                            <th className="text-center" style={{ width: '5%', minWidth: '50px', padding: '0.4rem 0.3rem' }}>QTY</th>
+                            <th className="text-center" style={{ width: '8%', minWidth: '70px', padding: '0.4rem 0.3rem' }}>RATE</th>
+                            <th className="text-center" style={{ width: '5%', minWidth: '50px', padding: '0.4rem 0.3rem' }}>DISC</th>
+                            <th className="text-right" style={{ width: '10%', minWidth: '80px', padding: '0.4rem 0.3rem' }}>AMOUNT</th>
+                            <th className="text-center" style={{ width: '14%', minWidth: '110px', padding: '0.4rem 0.3rem' }}>ROOM</th>
+                            <th className="text-center" style={{ width: '3%', minWidth: '40px', padding: '0.4rem 0.3rem' }}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {products.length === 0 ? (
                             <tr>
-                                <td colSpan={9} className="text-center p-6 text-muted">
+                                <td colSpan={10} className="text-center p-6 text-muted">
                                     <div className="flex flex-col items-center gap-2">
                                         <Info size={24} />
                                         <p>No products added yet. Click "Add Product" to start.</p>
@@ -404,7 +493,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                                     </div>
 
                                     {activeRowId === product.id && (
-                                        <div className="suggestions-dropdown glass-premium" style={{ right: '-150px', minWidth: '380px' }}>
+                                        <div className="suggestions-dropdown glass-premium" style={{ left: 0, width: 'max-content', maxWidth: '85vw', minWidth: '250px' }}>
                                             {history.filter(h =>
                                                 h.productCode?.toLowerCase().includes(product.productCode.toLowerCase()) ||
                                                 h.productName?.toLowerCase().includes(product.productName.toLowerCase())
@@ -541,6 +630,19 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                                 <td className="text-right font-bold text-primary text-xs" style={{ whiteSpace: 'nowrap', padding: '0.4rem 0.3rem' }}>
                                     {formatCurrency(product.finalAmount)}
                                 </td>
+                                <td style={{ padding: '0.4rem 0.3rem' }}>
+                                    <select
+                                        className="input-field-warm w-full text-xs"
+                                        style={{ padding: '0.3rem 0.2rem', fontSize: '0.7rem' }}
+                                        value={product.room || ''}
+                                        onChange={(e) => updateProduct(product.id, 'room', e.target.value)}
+                                        title="Assign Room"
+                                    >
+                                        {ROOM_OPTIONS.map(r => (
+                                            <option key={r.value} value={r.value}>{r.label}</option>
+                                        ))}
+                                    </select>
+                                </td>
                                 <td className="text-center" style={{ padding: '0.4rem 0.3rem' }}>
                                     <button
                                         className="btn btn-danger p-1 hover:bg-red-50 flex items-center justify-center mx-auto"
@@ -658,6 +760,18 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                                     <div className="text-[10px] text-muted uppercase font-bold">Total</div>
                                     <div className="text-lg font-bold text-primary">{formatCurrency(product.finalAmount)}</div>
                                 </div>
+                            </div>
+                            <div className="px-4 pb-3">
+                                <label className="input-label text-[10px] mb-1">Room</label>
+                                <select
+                                    className="input-field-warm w-full text-xs"
+                                    value={product.room || ''}
+                                    onChange={(e) => updateProduct(product.id, 'room', e.target.value)}
+                                >
+                                    {ROOM_OPTIONS.map(r => (
+                                        <option key={r.value} value={r.value}>{r.label}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     ))

@@ -12,6 +12,7 @@ export interface ProductDetails {
   discountAmount: number; // Computed discount amount
   amountBeforeDiscount: number;
   finalAmount: number; // after individual discount
+  room?: string; // Room segment (e.g. "Master Bathroom", "Guest Bathroom")
 }
 
 export interface CustomerDetails {

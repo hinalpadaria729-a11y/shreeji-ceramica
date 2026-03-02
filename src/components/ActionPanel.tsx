@@ -18,6 +18,8 @@ interface ActionPanelProps {
     onGlobalDiscountChange: (val: number) => void;
     onViewPDF: () => void;
     onSaveQuote: () => void;
+    enableWatermark: boolean;
+    onEnableWatermarkChange: (val: boolean) => void;
 }
 
 export const ActionPanel: React.FC<ActionPanelProps> = ({
@@ -32,13 +34,15 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
     globalDiscountAmount,
     onGlobalDiscountChange,
     onViewPDF,
-    onSaveQuote
+    onSaveQuote,
+    enableWatermark,
+    onEnableWatermarkChange,
 }) => {
     const [isSharing, setIsSharing] = useState(false);
 
     const handleGeneratePDF = async () => {
         const discValue = discountMode === 'COMMON' ? commonDiscountPercentage : globalDiscountAmount;
-        await generatePDF(customer, products, discountMode, discValue, includeGST, gstPercentage);
+        await generatePDF(customer, products, discountMode, discValue, includeGST, gstPercentage, undefined, enableWatermark);
     };
 
     const generateMessageText = (includePdfLink: string | null = null) => {
@@ -59,7 +63,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
             const discValue = discountMode === 'COMMON' ? commonDiscountPercentage : globalDiscountAmount;
             const cleanName = customer.customerName?.replace(/\s+/g, '_') || 'Draft';
             const fileName = `${cleanName}_Quotation.pdf`;
-            const pdfFile = await getPDFFile(customer, products, discountMode, discValue, includeGST, gstPercentage);
+            const pdfFile = await getPDFFile(customer, products, discountMode, discValue, includeGST, gstPercentage, undefined, enableWatermark);
             const publicUrl = await uploadPDF(pdfFile, fileName);
             const vanityUrl = window.location.origin + "/quotations/" + fileName;
             const messageText = generateMessageText(publicUrl ? vanityUrl : null);
@@ -104,6 +108,46 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
                                     {mode === 'INDIVIDUAL' ? 'Item Wise' : mode === 'COMMON' ? 'Common %' : 'On Total'}
                                 </button>
                             ))}
+                        </div>
+                    </div>
+                    {/* Watermark / Branding Toggle */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label className="text-[10px] font-bold text-muted uppercase tracking-wider">PDF Branding</label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+                            onClick={() => onEnableWatermarkChange(!enableWatermark)}>
+                            {/* Toggle pill */}
+                            <div style={{
+                                position: 'relative',
+                                width: '44px',
+                                height: '24px',
+                                borderRadius: '12px',
+                                backgroundColor: enableWatermark ? 'var(--color-secondary, #b59a6a)' : '#ccc',
+                                boxShadow: enableWatermark ? '0 0 8px var(--color-secondary, #b59a6a)' : 'none',
+                                transition: 'background-color 0.3s, box-shadow 0.3s',
+                                flexShrink: 0,
+                            }}>
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '2px',
+                                    left: enableWatermark ? '22px' : '2px',
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#fff',
+                                    boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+                                    transition: 'left 0.3s',
+                                }} />
+                            </div>
+                            <div>
+                                <span style={{ fontSize: '12px', fontWeight: 700, color: enableWatermark ? 'var(--color-secondary, #b59a6a)' : '#999' }}>
+                                    {enableWatermark ? 'Watermark ON' : 'Watermark OFF'}
+                                </span>
+                                <p style={{ fontSize: '9px', color: '#999', margin: '2px 0 0', fontStyle: 'italic' }}>
+                                    {enableWatermark
+                                        ? 'Logo, address & watermark visible. PDF is encrypted.'
+                                        : 'Plain PDF — no branding, no watermark.'}
+                                </p>
+                            </div>
                         </div>
                     </div>
 

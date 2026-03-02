@@ -14,6 +14,7 @@ import { saveQuotation, getNextQuotationNumber } from './utils/storage';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { SavedQuotationsList } from './components/SavedQuotationsList';
 import { Dashboard } from './components/Dashboard';
+import { RoomSummaryCard } from './components/RoomSummaryCard';
 import type { DiscountMode } from './types';
 
 function App() {
@@ -47,6 +48,8 @@ function App() {
   const [globalDiscountAmount, setGlobalDiscountAmount] = useState<number>(0);
   const [currentQuoteNumber, setCurrentQuoteNumber] = useState<number | undefined>(undefined);
   const [currentQuoteId, setCurrentQuoteId] = useState<string>(crypto.randomUUID());
+  const [enableWatermark, setEnableWatermark] = useState<boolean>(true);
+  const [preparedBy, setPreparedBy] = useState<string>('');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('theme');
     return (saved as 'light' | 'dark') || 'light';
@@ -83,18 +86,6 @@ function App() {
     if (!customer.phone.trim()) {
       alert("Please enter a Phone Number before proceeding.");
       return false;
-    }
-    if (includeGST) {
-      if (!customer.gstNumber || customer.gstNumber.trim() === '') {
-        alert("Please enter a GST Number when 'Apply GST' is checked.");
-        return false;
-      }
-      // Basic Regex for Indian GSTIN (15 characters alphanumeric)
-      const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-      if (!gstRegex.test(customer.gstNumber.trim().toUpperCase())) {
-        alert("Please enter a valid 15-character GSTIN Number (e.g. 22AAAAA0000A1Z5).");
-        return false;
-      }
     }
     if (products.length === 0) {
       alert("Please add at least one product before proceeding.");
@@ -134,18 +125,28 @@ function App() {
     alert('Quotation saved successfully to history!');
   };
 
+  const validatePreparedBy = () => {
+    if (enableWatermark && !preparedBy) {
+      alert('Please select a "Prepared By" name before generating the PDF (required when Watermark/Branding is ON).');
+      return false;
+    }
+    return true;
+  };
+
   const handleViewPDF = async () => {
     if (!validateQuote()) return;
+    if (!validatePreparedBy()) return;
     await autoSaveQuotation();
-    const url = await getPDFBlobUrl(customer, products, discountMode, discountMode === 'COMMON' ? commonDiscountPercentage : globalDiscountAmount, includeGST, gstPercentage, currentQuoteNumber);
+    const url = await getPDFBlobUrl(customer, products, discountMode, discountMode === 'COMMON' ? commonDiscountPercentage : globalDiscountAmount, includeGST, gstPercentage, currentQuoteNumber, enableWatermark, preparedBy);
     setPreviewUrl(url);
     setIsPreviewOpen(true);
   };
 
   const handleDownloadFromPreview = async () => {
     if (!validateQuote()) return;
+    if (!validatePreparedBy()) return;
     await autoSaveQuotation();
-    await generatePDF(customer, products, discountMode, discountMode === 'COMMON' ? commonDiscountPercentage : globalDiscountAmount, includeGST, gstPercentage, currentQuoteNumber);
+    await generatePDF(customer, products, discountMode, discountMode === 'COMMON' ? commonDiscountPercentage : globalDiscountAmount, includeGST, gstPercentage, currentQuoteNumber, enableWatermark, preparedBy);
   };
 
   if (currentRoute === 'DASHBOARD') {
@@ -229,6 +230,8 @@ function App() {
                   onIncludeGSTChange={setIncludeGST}
                   gstPercentage={gstPercentage}
                   onGstPercentageChange={setGstPercentage}
+                  preparedBy={preparedBy}
+                  onPreparedByChange={setPreparedBy}
                 />
               </div>
 
@@ -256,6 +259,8 @@ function App() {
                   onGlobalDiscountChange={setGlobalDiscountAmount}
                   onViewPDF={handleViewPDF}
                   onSaveQuote={handleSaveQuote}
+                  enableWatermark={enableWatermark}
+                  onEnableWatermarkChange={setEnableWatermark}
                 />
               </div>
             </div>
@@ -263,6 +268,12 @@ function App() {
             <aside className="sidebar flex flex-col gap-4">
               <SummaryTotals
                 totals={totals}
+                includeGST={includeGST}
+                gstPercentage={gstPercentage}
+              />
+
+              <RoomSummaryCard
+                products={products}
                 includeGST={includeGST}
                 gstPercentage={gstPercentage}
               />

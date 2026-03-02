@@ -1,6 +1,13 @@
 import React from 'react';
-import { User, Percent } from 'lucide-react';
+import { User, Percent, UserCheck } from 'lucide-react';
 import type { CustomerDetails } from '../types';
+
+const PREPARED_BY_OPTIONS = [
+    { label: '— Select —', value: '' },
+    { label: 'Harsh Bhai — +91 82385 21277', value: 'Harsh Bhai — +91 82385 21277' },
+    { label: 'Karan Bhai — +91 82009 17069', value: 'Karan Bhai — +91 82009 17069' },
+    { label: 'Kunal Bhai — +91 98987 13167', value: 'Kunal Bhai — +91 98987 13167' },
+];
 
 interface CustomerFormProps {
     customer: CustomerDetails;
@@ -9,6 +16,8 @@ interface CustomerFormProps {
     onIncludeGSTChange: (value: boolean) => void;
     gstPercentage: number;
     onGstPercentageChange: (value: number) => void;
+    preparedBy: string;
+    onPreparedByChange: (val: string) => void;
 }
 
 export const CustomerForm: React.FC<CustomerFormProps> = ({
@@ -17,11 +26,30 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     includeGST,
     onIncludeGSTChange,
     gstPercentage,
-    onGstPercentageChange
+    onGstPercentageChange,
+    preparedBy,
+    onPreparedByChange,
 }) => {
     return (
         <div className="liquid-glass-warm p-8 animate-reveal-up relative overflow-visible">
-            <h2 className="panel-title flex-shrink-0"><User size={20} className="text-secondary" /> Client Information</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                <h2 className="panel-title flex-shrink-0" style={{ margin: 0 }}><User size={20} className="text-secondary" /> Client Information</h2>
+                {/* Prepared By Dropdown */}
+                <div className="flex items-center gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+                    <UserCheck size={16} className="text-secondary flex-shrink-0" />
+                    <label className="text-[10px] font-bold text-muted uppercase tracking-wider flex-shrink-0" style={{ whiteSpace: 'nowrap' }}>Prepared By</label>
+                    <select
+                        className="input-field-warm flex-grow sm:flex-grow-0"
+                        style={{ padding: '4px 12px', fontSize: '13px', fontWeight: 600, minWidth: '150px' }}
+                        value={preparedBy}
+                        onChange={(e) => onPreparedByChange(e.target.value)}
+                    >
+                        {PREPARED_BY_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="flex flex-col gap-1">
@@ -35,16 +63,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-bold text-muted uppercase tracking-wider ml-1">Company (Optional)</label>
-                    <textarea
-                        className="input-field-warm w-full resize-y"
-                        rows={1}
-                        placeholder="e.g. Shreeji Ceramica"
-                        value={customer.companyName}
-                        onChange={(e) => onChange('companyName', e.target.value)}
-                    />
-                </div>
 
                 <div className="flex flex-col gap-1">
                     <label className="text-[10px] font-bold text-muted uppercase tracking-wider ml-1">Phone Number</label>
@@ -111,18 +129,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                                 />
                                 <Percent size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/40" />
                             </div>
-                        </div>
-
-                        <div className="flex flex-col gap-1">
-                            <label className="text-[10px] font-bold text-muted uppercase">GSTIN Number</label>
-                            <input
-                                type="text"
-                                className="input-field-warm py-1 px-4 w-52 font-mono text-sm tracking-wider uppercase"
-                                placeholder="15-DIGIT GSTIN"
-                                value={customer.gstNumber || ''}
-                                onChange={(e) => onChange('gstNumber', e.target.value.toUpperCase())}
-                                maxLength={15}
-                            />
                         </div>
                     </div>
                 )}
